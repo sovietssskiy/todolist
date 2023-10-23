@@ -1,0 +1,32 @@
+version: '3'
+services:
+  spring_app:
+    image: docker-spring-boot-postgres:latest
+    build:
+      context: .
+    depends_on:
+      - db_pg_15
+    env_file:
+      - .env
+    networks:
+      - network
+  db_pg_15:
+    image: postgres:15-alpine
+    container_name: db_pg_15
+    env_file:
+      - .env
+    networks:
+      - network
+  nginx:
+    image: nginx
+    depends_on:
+      - spring_app
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - network
+networks:
+  network:
+    driver: bridge
